@@ -3,219 +3,372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Math 24 Adventure - Grade 4 Practice</title>
+    <title>Grade 4 Math Quest with Professor Whiskers</title>
     
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Fredoka & Nunito for friendly typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome for icons -->
+    <!-- Google Fonts: Fredoka & Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Canvas Confetti for victory celebrations -->
+    <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
         * {
             touch-action: manipulation;
+            user-select: none;
         }
         body {
             font-family: 'Fredoka', 'Nunito', sans-serif;
-            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 50%, #fbcfe8 100%);
+            background: linear-gradient(135deg, #e0f2fe 0%, #fef3c7 50%, #fbcfe8 100%);
             min-height: 100vh;
         }
 
-        @keyframes catBounce {
+        /* Keyframe animations for mascot and UI */
+        @keyframes catHappyBounce {
             0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-8px) rotate(2deg); }
+            30% { transform: translateY(-12px) rotate(-3deg) scale(1.05); }
+            60% { transform: translateY(-4px) rotate(3deg) scale(1.02); }
         }
-        .cat-happy {
-            animation: catBounce 0.4s ease-in-out infinite alternate;
-        }
-
-        @keyframes catShake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-6px) rotate(-3deg); }
-            75% { transform: translateX(6px) rotate(3deg); }
-        }
-        .cat-sad {
-            animation: catShake 0.4s ease-in-out;
+        .cat-anim-happy {
+            animation: catHappyBounce 0.6s ease-in-out infinite alternate;
         }
 
-        @keyframes popIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        @keyframes catSadShake {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            20% { transform: translateX(-8px) rotate(-4deg); }
+            40% { transform: translateX(8px) rotate(4deg); }
+            60% { transform: translateX(-5px) rotate(-2deg); }
+            80% { transform: translateX(5px) rotate(2deg); }
         }
-        .pop-in {
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        .cat-anim-sad {
+            animation: catSadShake 0.5s ease-in-out;
+        }
+
+        @keyframes floatHeart {
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            100% { opacity: 0; transform: translateY(-35px) scale(1.3); }
+        }
+        .heart-particle {
+            position: absolute;
+            animation: floatHeart 0.9s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.8); }
+        }
+        .streak-glow {
+            animation: pulseGlow 1.5s infinite;
+        }
+
+        .btn-press {
+            transition: all 0.1s ease;
+        }
+        .btn-press:active {
+            transform: scale(0.92);
         }
 
         .card-shadow {
-            box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.25), 0 8px 10px -6px rgba(245, 158, 11, 0.2);
-        }
-        
-        .btn-press {
-            transition: transform 0.1s ease, box-shadow 0.1s ease;
-        }
-        .btn-press:active {
-            transform: scale(0.94);
+            box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-between p-3 sm:p-6 min-h-screen">
+<body class="flex flex-col items-center justify-between p-3 sm:p-5 min-h-screen">
 
     <div class="w-full max-w-2xl mx-auto flex-grow flex flex-col justify-between">
         
-        <!-- Header -->
-        <header class="w-full bg-white/90 backdrop-blur-md rounded-2xl p-4 mb-4 shadow-md border border-white/80 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-                <div class="bg-amber-400 text-white w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
-                    <i class="fa-solid fa-calculator"></i>
+        <!-- Header / Navigation Bar -->
+        <header class="w-full bg-white/90 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 mb-3 shadow-md border border-white/80 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+                <div class="bg-gradient-to-tr from-amber-400 to-orange-500 text-white w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center text-xl sm:text-2xl shadow-sm">
+                    <i class="fa-solid fa-graduation-cap"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-bold text-gray-800 leading-tight">Math 24 Adventure</h1>
-                    <p class="text-xs text-gray-500 font-semibold">Combine numbers to reach <span class="text-amber-600 font-bold">24</span>!</p>
+                    <h1 class="text-lg sm:text-xl font-extrabold text-gray-800 leading-tight">Grade 4 Math Quest</h1>
+                    <p class="text-xs text-amber-600 font-bold hidden sm:block">Arithmetic Arcade with Prof. Whiskers</p>
                 </div>
             </div>
 
-            <!-- Difficulty Selector & Stats -->
-            <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                <select id="difficulty-select" onchange="changeDifficulty(this.value)" class="bg-amber-50 border-2 border-amber-300 text-gray-800 text-xs font-bold rounded-xl px-3 py-2 focus:outline-none focus:border-amber-500 cursor-pointer shadow-sm">
-                    <option value="easy">⭐ Easy (1 Dot)</option>
-                    <option value="medium" selected>⭐⭐ Medium (2 Dots)</option>
-                    <option value="hard">⭐⭐⭐ Hard (3 Dots)</option>
-                </select>
-                <div class="bg-purple-100 text-purple-700 px-3 py-2 rounded-xl text-xs font-black shadow-sm flex items-center gap-1">
-                    <i class="fa-solid fa-star text-amber-500"></i> <span id="score-display">0</span>
+            <!-- Stats & Settings -->
+            <div class="flex items-center gap-2">
+                <!-- Stars Collected -->
+                <div class="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1 shadow-sm">
+                    <i class="fa-solid fa-star text-amber-500"></i>
+                    <span id="stars-display">0</span>
                 </div>
+                <!-- Total Score -->
+                <div class="bg-purple-100 text-purple-800 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1 shadow-sm">
+                    <i class="fa-solid fa-trophy text-purple-500"></i>
+                    <span id="score-display">0</span>
+                </div>
+                <!-- Audio Mute Toggle -->
+                <button id="mute-btn" onclick="toggleAudio()" class="w-9 h-9 sm:w-10 sm:h-10 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl flex items-center justify-center text-sm font-bold transition-all shadow-sm">
+                    <i id="mute-icon" class="fa-solid fa-volume-high"></i>
+                </button>
             </div>
         </header>
 
-        <!-- Cat Mascot Banner -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-4 mb-4 shadow-md border-2 border-amber-100 flex items-center gap-4 relative overflow-hidden">
-            <div id="cat-container" class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 bg-amber-100 rounded-2xl flex items-center justify-center shadow-inner relative">
-                <!-- SVG Cat Mascot -->
-                <svg id="cat-svg" viewBox="0 0 100 100" class="w-14 h-14 sm:w-16 sm:h-16 transition-all">
+        <!-- Professor Whiskers Mascot Section -->
+        <div id="mascot-card" class="bg-white/85 backdrop-blur-sm rounded-3xl p-3.5 sm:p-4 mb-3 shadow-md border-2 border-amber-200/80 flex items-center gap-3 sm:gap-4 relative overflow-hidden">
+            <div id="cat-wrapper" class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 bg-amber-100/80 rounded-2xl flex items-center justify-center shadow-inner relative">
+                <!-- Dynamic SVG Cat Mascot -->
+                <svg id="cat-svg" viewBox="0 0 100 100" class="w-14 h-14 sm:w-18 sm:h-18 transition-all">
                     <!-- Ears -->
-                    <polygon points="20,35 30,10 45,30" fill="#f59e0b" />
-                    <polygon points="55,30 70,10 80,35" fill="#f59e0b" />
-                    <polygon points="24,32 30,16 40,28" fill="#fbcfe8" />
-                    <polygon points="60,28 70,16 76,32" fill="#fbcfe8" />
-                    <!-- Head -->
+                    <polygon id="left-ear" points="20,35 28,8 45,28" fill="#f59e0b" />
+                    <polygon id="right-ear" points="55,28 72,8 80,35" fill="#f59e0b" />
+                    <polygon id="left-inner-ear" points="24,32 30,14 40,27" fill="#fbcfe8" />
+                    <polygon id="right-inner-ear" points="60,27 70,14 76,32" fill="#fbcfe8" />
+                    
+                    <!-- Head & Cheeks -->
                     <circle cx="50" cy="55" r="30" fill="#f59e0b" />
-                    <!-- Cheeks -->
-                    <circle cx="35" cy="62" r="5" fill="#fbcfe8" />
-                    <circle cx="65" cy="62" r="5" fill="#fbcfe8" />
-                    <!-- Eyes (Happy by default) -->
+                    <circle cx="33" cy="62" r="5" fill="#fbcfe8" opacity="0.8" />
+                    <circle cx="67" cy="62" r="5" fill="#fbcfe8" opacity="0.8" />
+                    
+                    <!-- Eyes Container -->
                     <g id="cat-eyes">
-                        <circle cx="38" cy="48" r="3.5" fill="#1f2937" />
-                        <circle cx="62" cy="48" r="3.5" fill="#1f2937" />
+                        <!-- Happy Curves (Default hidden) -->
+                        <path id="eye-happy-left" d="M 33 48 Q 38 42 43 48" fill="none" stroke="#1f2937" stroke-width="3" stroke-linecap="round" class="hidden" />
+                        <path id="eye-happy-right" d="M 57 48 Q 62 42 67 48" fill="none" stroke="#1f2937" stroke-width="3" stroke-linecap="round" class="hidden" />
+                        
+                        <!-- Normal Circles -->
+                        <circle id="eye-normal-left" cx="38" cy="48" r="3.5" fill="#1f2937" />
+                        <circle id="eye-normal-right" cx="62" cy="48" r="3.5" fill="#1f2937" />
+                        
+                        <!-- Sad Droop Lines -->
+                        <path id="eye-sad-left" d="M 34 46 Q 38 52 42 46" fill="none" stroke="#1f2937" stroke-width="3" stroke-linecap="round" class="hidden" />
+                        <path id="eye-sad-right" d="M 58 46 Q 62 52 66 46" fill="none" stroke="#1f2937" stroke-width="3" stroke-linecap="round" class="hidden" />
                     </g>
+                    
+                    <!-- Teardrop (Sad state) -->
+                    <path id="cat-tear" d="M 30 56 Q 32 62 30 65 Q 28 62 30 56" fill="#38bdf8" class="hidden" />
+
                     <!-- Nose & Mouth -->
                     <polygon points="47,56 53,56 50,60" fill="#1f2937" />
                     <path id="cat-mouth" d="M 44 63 Q 50 68 56 63" fill="none" stroke="#1f2937" stroke-width="2.5" stroke-linecap="round" />
+                    
                     <!-- Whiskers -->
-                    <line x1="22" y1="58" x2="33" y2="58" stroke="#1f2937" stroke-width="1.5" stroke-linecap="round" />
-                    <line x1="21" y1="64" x2="32" y2="62" stroke="#1f2937" stroke-width="1.5" stroke-linecap="round" />
-                    <line x1="67" y1="58" x2="78" y2="58" stroke="#1f2937" stroke-width="1.5" stroke-linecap="round" />
-                    <line x1="68" y1="62" x2="79" y2="64" stroke="#1f2937" stroke-width="1.5" stroke-linecap="round" />
+                    <line x1="20" y1="58" x2="31" y2="58" stroke="#1f2937" stroke-width="1.5" stroke-linecap="round" />
+                    <line x1="19" y1="64" x2="30" y2="62" stroke="#1f2937" stroke-width="1.5" stroke-linecap="round" />
+                    <line x1="69" y1="58" x2="80" y2="58" stroke="#1f2937" stroke-width="1.5" stroke-linecap="round" />
+                    <line x1="70" y1="62" x2="81" y2="64" stroke="#1f2937" stroke-width="1.5" stroke-linecap="round" />
                 </svg>
             </div>
+            
             <div class="flex-grow">
-                <div class="flex items-center justify-between mb-1">
-                    <span id="cat-mood-title" class="text-xs font-bold uppercase tracking-wider text-amber-600">Professor Whiskers</span>
-                    <span id="puzzle-dots" class="text-xs font-bold text-amber-500">⭐⭐ Medium</span>
+                <div class="flex items-center justify-between mb-0.5">
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Professor Whiskers</span>
+                    <span id="streak-badge" class="text-xs font-black bg-orange-100 text-orange-700 px-2 py-0.5 rounded-lg border border-orange-200">
+                        🔥 Streak: <span id="streak-count">0</span>/5
+                    </span>
                 </div>
-                <div id="cat-speech" class="bg-amber-50 border border-amber-200 p-2.5 rounded-2xl text-xs sm:text-sm font-semibold text-gray-700 shadow-sm">
-                    Tap two cards and choose an operator (+, -, ×, ÷) to combine them! Reach 24 to win! 🐾
+                <!-- Speech Bubble -->
+                <div id="cat-speech" class="bg-amber-50 border border-amber-200 p-2.5 rounded-2xl text-xs sm:text-sm font-bold text-gray-700 shadow-sm transition-all min-h-[46px] flex items-center">
+                    Welcome to Math Quest! Select a mode below to start practicing! 🐾
                 </div>
             </div>
         </div>
 
-        <!-- Main Game Card Area -->
-        <main class="bg-white rounded-3xl shadow-xl p-5 sm:p-8 relative border-4 border-amber-100 flex-grow flex flex-col justify-between mb-4">
-            
-            <!-- Puzzle Status & Step Progress -->
-            <div class="flex justify-between items-center mb-6">
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Target Number</p>
-                    <h2 class="text-3xl font-black text-amber-500">24</h2>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="openHintModal()" class="btn-bounce bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-bold py-2 px-3 rounded-xl flex items-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-lightbulb text-amber-500"></i> Hint
+        <!-- MODE SELECTION SCREEN -->
+        <main id="mode-select-screen" class="bg-white rounded-3xl shadow-xl p-5 sm:p-6 border-4 border-amber-100 flex-grow flex flex-col justify-between">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-gray-800 text-center mb-1">Choose Your Adventure</h2>
+                <p class="text-xs sm:text-sm font-bold text-gray-500 text-center mb-5">Master Grade 4 math facts & earn star badges!</p>
+                
+                <!-- Topic Quest Buttons -->
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <button onclick="startTopicQuest('addition')" class="btn-press bg-gradient-to-br from-emerald-400 to-teal-500 text-white p-4 rounded-2xl font-extrabold shadow-md flex flex-col items-center gap-1 hover:brightness-105">
+                        <i class="fa-solid fa-plus-circle text-2xl"></i>
+                        <span class="text-base">Addition</span>
+                        <span class="text-[10px] opacity-90 font-semibold">3-Digit Carrying</span>
                     </button>
-                    <button onclick="openSolutionModal()" class="btn-bounce bg-purple-100 hover:bg-purple-200 text-purple-800 text-xs font-bold py-2 px-3 rounded-xl flex items-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-book-open text-purple-500"></i> Solution
+
+                    <button onclick="startTopicQuest('subtraction')" class="btn-press bg-gradient-to-br from-rose-400 to-pink-500 text-white p-4 rounded-2xl font-extrabold shadow-md flex flex-col items-center gap-1 hover:brightness-105">
+                        <i class="fa-solid fa-minus-circle text-2xl"></i>
+                        <span class="text-base">Subtraction</span>
+                        <span class="text-[10px] opacity-90 font-semibold">3-Digit Borrowing</span>
+                    </button>
+
+                    <button onclick="startTopicQuest('multiplication')" class="btn-press bg-gradient-to-br from-amber-400 to-orange-500 text-white p-4 rounded-2xl font-extrabold shadow-md flex flex-col items-center gap-1 hover:brightness-105">
+                        <i class="fa-solid fa-times-circle text-2xl"></i>
+                        <span class="text-base">Multiplication</span>
+                        <span class="text-[10px] opacity-90 font-semibold">Tables 1-12 & 2D×1D</span>
+                    </button>
+
+                    <button onclick="startTopicQuest('division')" class="btn-press bg-gradient-to-br from-indigo-400 to-purple-500 text-white p-4 rounded-2xl font-extrabold shadow-md flex flex-col items-center gap-1 hover:brightness-105">
+                        <i class="fa-solid fa-divide text-2xl"></i>
+                        <span class="text-base">Division</span>
+                        <span class="text-[10px] opacity-90 font-semibold">Facts up to 144</span>
+                    </button>
+                </div>
+
+                <!-- Special Challenge Modes -->
+                <div class="space-y-2.5">
+                    <button onclick="startTopicQuest('mixed')" class="btn-press w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white p-3.5 rounded-2xl font-extrabold shadow-md flex items-center justify-between px-5 hover:brightness-105">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-shuffle text-xl"></i>
+                            <div class="text-left">
+                                <div class="text-sm">Mixed Quest & Missing Numbers</div>
+                                <div class="text-[10px] opacity-90 font-semibold">Random operations & ? puzzle cards</div>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+
+                    <button onclick="startSpeedRun()" class="btn-press w-full bg-gradient-to-r from-red-500 to-amber-500 text-white p-3.5 rounded-2xl font-extrabold shadow-md flex items-center justify-between px-5 hover:brightness-105">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-stopwatch text-xl"></i>
+                            <div class="text-left">
+                                <div class="text-sm">60-Second Speed Run</div>
+                                <div class="text-[10px] opacity-90 font-semibold">Answer as many as you can before time runs out!</div>
+                            </div>
+                        </div>
+                        <span id="speed-high-score" class="text-xs bg-white/20 px-2.5 py-1 rounded-lg font-black">Best: 0</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Number Cards Container -->
-            <div class="my-auto">
-                <p class="text-center text-xs font-bold text-gray-400 uppercase mb-3">Active Cards (Tap to Select)</p>
-                <div id="cards-container" class="flex flex-wrap justify-center gap-3 sm:gap-4 mb-6 min-h-[110px] items-center">
-                    <!-- Cards injected via JS -->
-                </div>
-
-                <!-- Operator Toolbar -->
-                <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-3 mb-6">
-                    <p class="text-center text-xs font-bold text-slate-400 uppercase mb-2">Choose Operator</p>
-                    <div class="flex justify-center gap-3 sm:gap-4">
-                        <button onclick="selectOperator('+')" id="op-plus" class="btn-bounce w-12 h-12 sm:w-14 sm:h-14 bg-white border-2 border-slate-300 rounded-2xl text-xl sm:text-2xl font-black text-blue-600 shadow-md flex items-center justify-center hover:border-blue-500 hover:bg-blue-50 transition-all">+</button>
-                        <button onclick="selectOperator('-')" id="op-minus" class="btn-bounce w-12 h-12 sm:w-14 sm:h-14 bg-white border-2 border-slate-300 rounded-2xl text-xl sm:text-2xl font-black text-rose-600 shadow-md flex items-center justify-center hover:border-rose-500 hover:bg-rose-50 transition-all">-</button>
-                        <button onclick="selectOperator('×')" id="op-multiply" class="btn-bounce w-12 h-12 sm:w-14 sm:h-14 bg-white border-2 border-slate-300 rounded-2xl text-xl sm:text-2xl font-black text-emerald-600 shadow-md flex items-center justify-center hover:border-emerald-500 hover:bg-emerald-50 transition-all">×</button>
-                        <button onclick="selectOperator('÷')" id="op-divide" class="btn-bounce w-12 h-12 sm:w-14 sm:h-14 bg-white border-2 border-slate-300 rounded-2xl text-xl sm:text-2xl font-black text-indigo-600 shadow-md flex items-center justify-center hover:border-indigo-500 hover:bg-indigo-50 transition-all">÷</button>
-                    </div>
-                </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-extrabold text-slate-500">
+                <span><i class="fa-solid fa-box-open text-amber-500"></i> Mystery Chest: 5 Streak</span>
+                <span><i class="fa-solid fa-keyboard"></i> Touch & Keyboard Supported</span>
             </div>
-
-            <!-- Action Buttons -->
-            <div class="flex gap-3">
-                <button onclick="resetCurrentPuzzle()" class="btn-bounce w-1/3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3.5 px-4 rounded-2xl border border-gray-300 text-sm shadow-sm flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-rotate-left"></i> Reset
-                </button>
-                <button onclick="nextPuzzle()" class="btn-bounce flex-1 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-amber-500/30 text-base flex items-center justify-center gap-2">
-                    Next Puzzle <i class="fa-solid fa-arrow-right"></i>
-                </button>
-            </div>
-
         </main>
 
-        <!-- Footer Info -->
+        <!-- GAME PLAY SCREEN (Initially Hidden) -->
+        <main id="game-play-screen" class="bg-white rounded-3xl shadow-xl p-4 sm:p-6 border-4 border-amber-100 flex-grow flex-col justify-between hidden">
+            
+            <!-- Game HUD Top Bar -->
+            <div class="flex justify-between items-center mb-3">
+                <button onclick="returnToMenu()" class="btn-press bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-extrabold py-2 px-3 rounded-xl flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-house"></i> Menu
+                </button>
+
+                <div id="mode-indicator" class="text-xs font-black uppercase tracking-wider bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl">
+                    Addition Quest
+                </div>
+
+                <div id="timer-badge" class="bg-red-100 text-red-700 px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1 hidden">
+                    <i class="fa-solid fa-clock"></i> <span id="time-left">60</span>s
+                </div>
+            </div>
+
+            <!-- Question & Input Display Area -->
+            <div class="my-auto py-2">
+                <!-- Question Card -->
+                <div class="bg-slate-50 border-2 border-slate-200 rounded-3xl p-4 sm:p-6 text-center mb-4 card-shadow relative">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1">Solve Equation</span>
+                    <div id="question-text" class="text-3xl sm:text-5xl font-black text-slate-800 tracking-wide">
+                        248 + 375 = ?
+                    </div>
+                </div>
+
+                <!-- User Answer Display Box -->
+                <div class="max-w-xs mx-auto mb-4">
+                    <div id="answer-box" class="bg-amber-50 border-4 border-amber-400 rounded-2xl h-14 sm:h-16 flex items-center justify-center text-2xl sm:text-3xl font-black text-amber-900 shadow-inner tracking-widest">
+                        <span id="answer-text"></span><span class="animate-pulse text-amber-400">|</span>
+                    </div>
+                </div>
+
+                <!-- On-Screen Touch Keypad -->
+                <div class="max-w-xs mx-auto grid grid-cols-3 gap-2">
+                    <button onclick="pressNum('1')" class="btn-press bg-slate-100 hover:bg-amber-100 border border-slate-200 text-slate-800 font-extrabold text-xl py-3 rounded-2xl shadow-sm">1</button>
+                    <button onclick="pressNum('2')" class="btn-press bg-slate-100 hover:bg-amber-100 border border-slate-200 text-slate-800 font-extrabold text-xl py-3 rounded-2xl shadow-sm">2</button>
+                    <button onclick="pressNum('3')" class="btn-press bg-slate-100 hover:bg-amber-100 border border-slate-200 text-slate-800 font-extrabold text-xl py-3 rounded-2xl shadow-sm">3</button>
+                    
+                    <button onclick="pressNum('4')" class="btn-press bg-slate-100 hover:bg-amber-100 border border-slate-200 text-slate-800 font-extrabold text-xl py-3 rounded-2xl shadow-sm">4</button>
+                    <button onclick="pressNum('5')" class="btn-press bg-slate-100 hover:bg-amber-100 border border-slate-200 text-slate-800 font-extrabold text-xl py-3 rounded-2xl shadow-sm">5</button>
+                    <button onclick="pressNum('6')" class="btn-press bg-slate-100 hover:bg-amber-100 border border-slate-200 text-slate-800 font-extrabold text-xl py-3 rounded-2xl shadow-sm">6</button>
+                    
+                    <button onclick="pressNum('7')" class="btn-press bg-slate-100 hover:bg-amber-100 border border-slate-200 text-slate-800 font-extrabold text-xl py-3 rounded-2xl shadow-sm">7</button>
+                    <button onclick="pressNum('8')" class="btn-press bg-slate-100 hover:bg-amber-100 border border-slate-200 text-slate-800 font-extrabold text-xl py-3 rounded-2xl shadow-sm">8</button>
+                    <button onclick="pressNum('9')" class="btn-press bg-slate-100 hover:bg-amber-100 border border-slate-200 text-slate-800 font-extrabold text-xl py-3 rounded-2xl shadow-sm">9</button>
+                    
+                    <button onclick="pressClear()" class="btn-press bg-rose-100 hover:bg-rose-200 border border-rose-200 text-rose-700 font-extrabold text-sm py-3 rounded-2xl shadow-sm">Clear</button>
+                    <button onclick="pressNum('0')" class="btn-press bg-slate-100 hover:bg-amber-100 border border-slate-200 text-slate-800 font-extrabold text-xl py-3 rounded-2xl shadow-sm">0</button>
+                    <button onclick="pressBackspace()" class="btn-press bg-amber-100 hover:bg-amber-200 border border-amber-200 text-amber-800 font-extrabold text-lg py-3 rounded-2xl shadow-sm">⌫</button>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="max-w-xs mx-auto mt-2.5">
+                    <button onclick="submitAnswer()" class="btn-press w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold py-3.5 rounded-2xl shadow-lg shadow-emerald-500/30 text-lg flex items-center justify-center gap-2">
+                        Submit Answer <i class="fa-solid fa-check"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bottom Progress Line -->
+            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                <div id="streak-progress-bar" class="bg-gradient-to-r from-amber-400 to-orange-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+        </main>
+
+        <!-- Footer -->
         <footer class="w-full text-center py-2">
-            <p class="text-xs text-gray-500 font-semibold">Grade 4 Math Puzzle Practice • Optimized for iPad, iPhone & Desktop</p>
+            <p class="text-[11px] text-gray-500 font-bold">Grade 4 Elementary Math Standards • Multiplication, Division, 3-Digit Arithmetic</p>
         </footer>
 
     </div>
 
-    <!-- Hint Modal -->
-    <div id="hint-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-4 border-amber-200 pop-in text-center">
-            <div class="text-4xl mb-2">💡</div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Helpful Hint</h3>
-            <p id="hint-text" class="text-sm text-gray-600 mb-6 font-semibold bg-amber-50 p-3 rounded-2xl border border-amber-200">...</p>
-            <button onclick="closeHintModal()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl shadow-md">Got It!</button>
+    <!-- MYSTERY CHEST UNLOCK MODAL -->
+    <div id="chest-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-4 border-amber-300 text-center relative overflow-hidden">
+            <div class="text-5xl mb-2 animate-bounce">🎁</div>
+            <h3 class="text-2xl font-black text-amber-600 mb-1">Streak Chest Unlocked!</h3>
+            <p class="text-xs font-bold text-gray-500 mb-4">You solved 5 questions in a row!</p>
+            
+            <div class="bg-amber-50 rounded-2xl p-4 border border-amber-200 mb-5 space-y-2">
+                <div class="flex justify-between items-center text-sm font-extrabold text-gray-700">
+                    <span>Bonus Stars:</span>
+                    <span class="text-amber-600">+3 Stars ⭐</span>
+                </div>
+                <div class="flex justify-between items-center text-sm font-extrabold text-gray-700">
+                    <span>Bonus Points:</span>
+                    <span class="text-purple-600">+50 Points 🏆</span>
+                </div>
+                <div class="text-xs font-bold text-emerald-600 pt-1 border-t border-amber-200">
+                    Prof. Whiskers is super proud of you!
+                </div>
+            </div>
+
+            <button onclick="closeChestModal()" class="btn-press w-full bg-gradient-to-r from-amber-400 to-orange-500 text-white font-extrabold py-3 rounded-2xl shadow-lg shadow-orange-500/30 text-base">
+                Claim Reward & Continue
+            </button>
         </div>
     </div>
 
-    <!-- Solution Modal -->
-    <div id="solution-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-4 border-purple-200 pop-in text-center">
-            <div class="text-4xl mb-2">📖</div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Solution Steps</h3>
-            <div id="solution-steps" class="text-sm text-left text-gray-700 mb-6 font-semibold bg-purple-50 p-4 rounded-2xl border border-purple-200 space-y-2">
-                <!-- Steps rendered here -->
+    <!-- SPEED RUN RESULTS MODAL -->
+    <div id="speed-results-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-4 border-red-300 text-center relative">
+            <div class="text-5xl mb-2">⏱️</div>
+            <h3 class="text-2xl font-black text-red-600 mb-1">Time's Up!</h3>
+            <p class="text-xs font-bold text-gray-500 mb-4">60-Second Speed Run Complete!</p>
+            
+            <div class="bg-red-50 rounded-2xl p-4 border border-red-200 mb-5 space-y-2">
+                <div class="flex justify-between items-center text-sm font-extrabold text-gray-700">
+                    <span>Questions Solved:</span>
+                    <span id="res-speed-score" class="text-red-600 font-black text-lg">0</span>
+                </div>
+                <div class="flex justify-between items-center text-sm font-extrabold text-gray-700">
+                    <span>Personal Best:</span>
+                    <span id="res-speed-best" class="text-purple-600 font-black text-lg">0</span>
+                </div>
             </div>
-            <button onclick="closeSolutionModal()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow-md">Close</button>
+
+            <button onclick="closeSpeedResultsModal()" class="btn-press w-full bg-gradient-to-r from-red-500 to-amber-500 text-white font-extrabold py-3 rounded-2xl shadow-lg text-base">
+                Back to Menu
+            </button>
         </div>
     </div>
 
     <script>
         /* ===================================================================
-           STREAMING_CHUNK:Initializing Web Audio API synthesizer and puzzle deck...
+           STREAMING_CHUNK:Initializing Web Audio API sound synthesizer...
            =================================================================== */
-        const SoundFX = {
+        const SoundEngine = {
             ctx: null,
+            muted: false,
             init() {
                 if (!this.ctx) {
                     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -223,56 +376,43 @@
                 }
             },
             playClick() {
+                if (this.muted) return;
                 this.init();
                 if (!this.ctx) return;
                 const now = this.ctx.currentTime;
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(440, now);
-                osc.frequency.exponentialRampToValueAtTime(587.33, now + 0.08);
-                gain.gain.setValueAtTime(0.15, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                osc.frequency.setValueAtTime(450, now);
+                osc.frequency.exponentialRampToValueAtTime(600, now + 0.05);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
                 osc.connect(gain);
                 gain.connect(this.ctx.destination);
                 osc.start(now);
-                osc.stop(now + 0.1);
+                osc.stop(now + 0.06);
             },
-            playCombine() {
+            playCorrect() {
+                if (this.muted) return;
                 this.init();
                 if (!this.ctx) return;
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(300, now);
-                osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.2);
-            },
-            playVictory() {
-                this.init();
-                if (!this.ctx) return;
-                const notes = [523.25, 659.25, 783.99, 1046.50];
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
                 notes.forEach((freq, idx) => {
-                    const now = this.ctx.currentTime + (idx * 0.12);
+                    const now = this.ctx.currentTime + (idx * 0.08);
                     const osc = this.ctx.createOscillator();
                     const gain = this.ctx.createGain();
-                    osc.type = 'sine';
+                    osc.type = 'triangle';
                     osc.frequency.setValueAtTime(freq, now);
-                    gain.gain.setValueAtTime(0.25, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
                     osc.connect(gain);
                     gain.connect(this.ctx.destination);
                     osc.start(now);
-                    osc.stop(now + 0.3);
+                    osc.stop(now + 0.2);
                 });
             },
-            playError() {
+            playWrong() {
+                if (this.muted) return;
                 this.init();
                 if (!this.ctx) return;
                 const now = this.ctx.currentTime;
@@ -280,338 +420,438 @@
                 const gain = this.ctx.createGain();
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(180, now);
-                osc.frequency.linearRampToValueAtTime(110, now + 0.2);
+                osc.frequency.linearRampToValueAtTime(110, now + 0.25);
                 gain.gain.setValueAtTime(0.15, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
                 osc.connect(gain);
                 gain.connect(this.ctx.destination);
                 osc.start(now);
-                osc.stop(now + 0.25);
+                osc.stop(now + 0.28);
+            },
+            playFanfare() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                const chord = [523.25, 659.25, 783.99, 1046.50];
+                chord.forEach(freq => {
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.8);
+                });
             }
         };
 
         /* ===================================================================
-           STREAMING_CHUNK:Defining Grade 4 Curated Puzzle Deck...
+           STREAMING_CHUNK:Defining Grade 4 math problem generators...
            =================================================================== */
-        const PUZZLE_DECK = {
-            easy: [
-                {
-                    numbers: [2, 3, 4, 6],
-                    hint: "Look for multiplication pairs like 4 × 6 = 24!",
-                    solution: ["2 × 3 = 6", "6 × 4 = 24"]
-                },
-                {
-                    numbers: [1, 5, 5, 5],
-                    hint: "Try adding 5 + 5 first, then use the other numbers.",
-                    solution: ["5 + 5 = 10", "10 + 5 = 15", "15 + 9 (wait): 5+5=10, 10+5=15... Let's use clean steps: 5+5=10, 10+5=15, wait 1,5,5,5 -> 5*5=25, 25-1=24"]
-                },
-                {
-                    numbers: [2, 4, 6, 8],
-                    hint: "Try subtracting 8 - 6 or multiplying 4 × 6.",
-                    solution: ["8 - 6 = 2", "4 × 2 = 8", "8 × 3 (wait): 4×6=24, 8/2=4... Let's do 6 × 4 = 24"]
+        const MathGenerator = {
+            getRandomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            },
+            generate(type) {
+                if (type === 'mixed') {
+                    const types = ['addition', 'subtraction', 'multiplication', 'division', 'missing'];
+                    type = types[this.getRandomInt(0, types.length - 1)];
                 }
-            ],
-            medium: [
-                {
-                    numbers: [3, 4, 6, 8],
-                    hint: "Can you make 8 and 3? (8 × 3 = 24)",
-                    solution: ["6 - 4 = 2", "8 - 2 = 6", "6 × 4 = 24 (or 8 × 3 = 24)"]
-                },
-                {
-                    numbers: [2, 5, 5, 10],
-                    hint: "Think about multiplication factors of 24, like 3 × 8 or 4 × 6.",
-                    solution: ["10 - 5 = 5", "5 + 5 = 10", "10 × 2 = 20... Try: 5 × 5 = 25, 25 - 1 = 24"]
-                },
-                {
-                    numbers: [1, 4, 6, 6],
-                    hint: "Multiply 4 × 6 first!",
-                    solution: ["4 × 6 = 24", "6 - 1 = 5", "24 × 1 = 24"]
+
+                switch (type) {
+                    case 'addition': {
+                        // 2 to 3-digit addition with carrying
+                        const a = this.getRandomInt(125, 499);
+                        const b = this.getRandomInt(148, 489);
+                        const ans = a + b;
+                        return {
+                            text: `${a} + ${b} = ?`,
+                            ans: ans,
+                            hint: `Try adding ones first: ${a % 10} + ${b % 10} = ${(a % 10) + (b % 10)}.`
+                        };
+                    }
+                    case 'subtraction': {
+                        // 3-digit subtraction with borrowing
+                        const a = this.getRandomInt(412, 985);
+                        const b = this.getRandomInt(145, a - 50);
+                        const ans = a - b;
+                        return {
+                            text: `${a} - ${b} = ?`,
+                            ans: ans,
+                            hint: `Subtract ones place, then tens place! Check if you need to borrow.`
+                        };
+                    }
+                    case 'multiplication': {
+                        // Times tables 1-12 or 2D x 1D
+                        if (Math.random() > 0.3) {
+                            const a = this.getRandomInt(3, 12);
+                            const b = this.getRandomInt(4, 12);
+                            return {
+                                text: `${a} × ${b} = ?`,
+                                ans: a * b,
+                                hint: `Think of ${a} groups of ${b}!`
+                            };
+                        } else {
+                            const a = this.getRandomInt(12, 22);
+                            const b = this.getRandomInt(3, 8);
+                            return {
+                                text: `${a} × ${b} = ?`,
+                                ans: a * b,
+                                hint: `Break it up: (${a - (a%10)} × ${b}) + (${a%10} × ${b}).`
+                            };
+                        }
+                    }
+                    case 'division': {
+                        // Exact division up to 144 / 12
+                        const b = this.getRandomInt(3, 12);
+                        const ans = this.getRandomInt(3, 12);
+                        const a = b * ans;
+                        return {
+                            text: `${a} ÷ ${b} = ?`,
+                            ans: ans,
+                            hint: `What number multiplied by ${b} equals ${a}?`
+                        };
+                    }
+                    case 'missing': {
+                        // Missing term puzzle e.g. 7 x ? = 63 or 45 + ? = 110
+                        const op = Math.random() > 0.5 ? '×' : '+';
+                        if (op === '×') {
+                            const a = this.getRandomInt(4, 11);
+                            const ans = this.getRandomInt(4, 12);
+                            const c = a * ans;
+                            return {
+                                text: `${a} × ? = ${c}`,
+                                ans: ans,
+                                hint: `Divide ${c} by ${a} to find the missing multiplier!`
+                            };
+                        } else {
+                            const a = this.getRandomInt(25, 85);
+                            const ans = this.getRandomInt(20, 75);
+                            const c = a + ans;
+                            return {
+                                text: `${a} + ? = ${c}`,
+                                ans: ans,
+                                hint: `Subtract ${a} from ${c} to find the missing addend!`
+                            };
+                        }
+                    }
                 }
-            ],
-            hard: [
-                {
-                    numbers: [3, 3, 8, 8],
-                    hint: "Division is your friend! 8 / 8 = 1 or 8 / 3?",
-                    solution: ["8 ÷ 8 = 1", "3 - 1 = 2", "12 × 2 = 24"]
-                },
-                {
-                    numbers: [4, 9, 9, 10],
-                    hint: "Try combining 10 and 9 or 9 and 4.",
-                    solution: ["10 - 4 = 6", "9 + 9 = 18", "18 + 6 = 24"]
-                },
-                {
-                    numbers: [2, 7, 7, 10],
-                    hint: "Look at 7 and 7: 7 + 7 = 14...",
-                    solution: ["10 - 7 = 3", "7 - 2 = 5", "3 × 8 ... Let's use clean steps!"]
-                }
-            ]
+            }
         };
 
         /* ===================================================================
-           STREAMING_CHUNK:Initializing game state and event handlers...
+           STREAMING_CHUNK:Managing state, scores, and streak persistence...
            =================================================================== */
-        let currentDifficulty = 'medium';
-        let currentPuzzleIndex = 0;
+        let currentMode = 'addition';
+        let currentQuestion = null;
+        let typedInput = '';
         let score = 0;
-        let activeCards = []; // Array of { id, value }
-        let selectedCard1 = null;
-        let selectedOperator = null;
+        let stars = 0;
+        let streak = 0;
+        let speedTimer = null;
+        let speedTimeLeft = 60;
+        let speedScore = 0;
 
-        function initGame() {
-            loadPuzzle();
-            updateScoreUI();
-        }
-
-        function changeDifficulty(diff) {
-            currentDifficulty = diff;
-            currentPuzzleIndex = 0;
-            loadPuzzle();
-        }
-
-        function loadPuzzle() {
-            const deck = PUZZLE_DECK[currentDifficulty];
-            const puzzle = deck[currentPuzzleIndex % deck.length];
+        function loadSavedStats() {
+            const savedStars = localStorage.getItem('gw_math_stars');
+            const savedScore = localStorage.getItem('gw_math_score');
+            const savedSpeedBest = localStorage.getItem('gw_math_speed_best');
             
-            // Assign unique IDs to initial numbers
-            activeCards = puzzle.numbers.map((num, idx) => ({
-                id: `card-${idx}-${Date.now()}`,
-                value: num
-            }));
+            if (savedStars) stars = parseInt(savedStars, 10) || 0;
+            if (savedScore) score = parseInt(savedScore, 10) || 0;
+            const speedBest = savedSpeedBest ? parseInt(savedSpeedBest, 10) : 0;
 
-            selectedCard1 = null;
-            selectedOperator = null;
-            clearOperatorSelection();
-            renderCards();
-            updateCatMascot('normal', "New puzzle loaded! Tap two cards to begin.");
-            
-            // Update difficulty badge
-            const dots = currentDifficulty === 'easy' ? '⭐ Easy' : currentDifficulty === 'medium' ? '⭐⭐ Medium' : '⭐⭐⭐ Hard';
-            document.getElementById('puzzle-dots').innerText = dots;
+            document.getElementById('stars-display').innerText = stars;
+            document.getElementById('score-display').innerText = score;
+            document.getElementById('speed-high-score').innerText = `Best: ${speedBest}`;
         }
 
-        function renderCards() {
-            const container = document.getElementById('cards-container');
-            container.innerHTML = '';
-
-            activeCards.forEach(card => {
-                const btn = document.createElement('button');
-                const isSelected = selectedCard1 === card.id;
-                
-                btn.className = `btn-bounce w-20 h-20 sm:w-24 sm:h-24 rounded-3xl border-4 text-3xl sm:text-4xl font-black shadow-lg flex items-center justify-center transition-all ${
-                    isSelected 
-                        ? 'bg-amber-400 border-amber-500 text-white scale-105 shadow-amber-500/40 ring-4 ring-amber-200' 
-                        : 'bg-white border-amber-200 text-gray-800 hover:border-amber-400 card-shadow'
-                }`;
-                btn.innerText = card.value;
-                btn.onclick = () => handleCardClick(card.id);
-                container.appendChild(btn);
-            });
-        }
-
-        /* ===================================================================
-           STREAMING_CHUNK:Implementing game interaction logic and cat reactions...
-           =================================================================== */
-        function handleCardClick(cardId) {
-            SoundFX.playClick();
-            
-            if (!selectedCard1) {
-                // Select first card
-                selectedCard1 = cardId;
-                updateCatMascot('normal', "Great! Now choose an operator (+, -, ×, ÷).");
-            } else if (selectedCard1 === cardId) {
-                // Deselect if clicked again
-                selectedCard1 = null;
-                updateCatMascot('normal', "Card deselected. Pick a card!");
-            } else if (!selectedOperator) {
-                // If first card already selected and no operator yet, switch selection
-                selectedCard1 = cardId;
-            } else {
-                // Both card 1 and operator are chosen, this is card 2!
-                combineCards(selectedCard1, selectedCard1 ? cardId : null);
-            }
-            renderCards();
-        }
-
-        function selectOperator(op) {
-            SoundFX.playClick();
-            if (!selectedCard1) {
-                updateCatMascot('sad', "Oops! Please tap your first number card before choosing an operator!");
-                return;
-            }
-            selectedOperator = op;
-            clearOperatorSelection();
-            
-            const btnId = op === '+' ? 'op-plus' : op === '-' ? 'op-minus' : op === '×' ? 'op-multiply' : 'op-divide';
-            const opBtn = document.getElementById(btnId);
-            if (opBtn) {
-                opBtn.classList.add('bg-amber-100', 'border-amber-500', 'scale-105', 'ring-2', 'ring-amber-300');
-            }
-            updateCatMascot('normal', `Operator ${op} selected! Now tap the second card.`);
-        }
-
-        function clearOperatorSelection() {
-            ['op-plus', 'op-minus', 'op-multiply', 'op-divide'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.classList.remove('bg-amber-100', 'border-amber-500', 'scale-105', 'ring-2', 'ring-amber-300');
-                }
-            });
-        }
-
-        function combineCards(id1, id2) {
-            const card1 = activeCards.find(c => c.id === id1);
-            const card2 = activeCards.find(c => c.id === id2);
-
-            if (!card1 || !card2 || !selectedOperator) return;
-
-            let val1 = card1.value;
-            let val2 = card2.value;
-            let result = 0;
-
-            if (selectedOperator === '+') result = val1 + val2;
-            else if (selectedOperator === '-') result = val1 - val2;
-            else if (selectedOperator === '×') result = val1 * val2;
-            else if (selectedOperator === '÷') {
-                if (val2 === 0 || val1 % val2 !== 0) {
-                    SoundFX.playError();
-                    updateCatMascot('sad', "Division must result in a whole number! Try another combination.");
-                    selectedCard1 = null;
-                    selectedOperator = null;
-                    clearOperatorSelection();
-                    renderCards();
-                    return;
-                }
-                result = val1 / val2;
-            }
-
-            SoundFX.playCombine();
-
-            // Replace card 1 with result, remove card 2
-            activeCards = activeCards.filter(c => c.id !== id2);
-            const targetCard = activeCards.find(c => c.id === id1);
-            if (targetCard) {
-                targetCard.value = result;
-            }
-
-            selectedCard1 = null;
-            selectedOperator = null;
-            clearOperatorSelection();
-            renderCards();
-
-            // Check win condition (only 1 card left and it equals 24)
-            if (activeCards.length === 1) {
-                if (activeCards[0].value === 24) {
-                    handleVictory();
-                } else {
-                    SoundFX.playError();
-                    updateCatMascot('sad', `Got ${activeCards[0].value}, but we need 24! Tap Reset to try again.`);
-                }
-            } else {
-                updateCatMascot('normal', `Calculated ${val1} ${selectedOperator} ${val2} = ${result}. Keep going!`);
-            }
-        }
-
-        /* ===================================================================
-           STREAMING_CHUNK:Handling victory celebrations and score progression...
-           =================================================================== */
-        function handleVictory() {
-            SoundFX.playVictory();
-            score += 10;
-            updateScoreUI();
-            updateCatMascot('happy', "🎉 Purr-fect! You reached 24! Amazing math skills!");
-
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
-
-            setTimeout(() => {
-                nextPuzzle();
-            }, 2500);
-        }
-
-        function nextPuzzle() {
-            SoundFX.playClick();
-            currentPuzzleIndex++;
-            loadPuzzle();
-        }
-
-        function resetCurrentPuzzle() {
-            SoundFX.playClick();
-            loadPuzzle();
-            updateCatMascot('sad', "Puzzle reset! Let's try a fresh strategy.");
-        }
-
-        function updateScoreUI() {
+        function saveStats() {
+            localStorage.setItem('gw_math_stars', stars);
+            localStorage.setItem('gw_math_score', score);
+            document.getElementById('stars-display').innerText = stars;
             document.getElementById('score-display').innerText = score;
         }
 
-        function updateCatMascot(mood, message) {
+        /* ===================================================================
+           STREAMING_CHUNK:Handling UI input keypad and keyboard events...
+           =================================================================== */
+        function pressNum(digit) {
+            SoundEngine.playClick();
+            if (typedInput.length < 5) {
+                typedInput += digit;
+                updateAnswerDisplay();
+            }
+        }
+
+        function pressClear() {
+            SoundEngine.playClick();
+            typedInput = '';
+            updateAnswerDisplay();
+        }
+
+        function pressBackspace() {
+            SoundEngine.playClick();
+            typedInput = typedInput.slice(0, -1);
+            updateAnswerDisplay();
+        }
+
+        function updateAnswerDisplay() {
+            document.getElementById('answer-text').innerText = typedInput;
+        }
+
+        // Global physical keyboard support
+        window.addEventListener('keydown', (e) => {
+            const gameScreen = document.getElementById('game-play-screen');
+            if (gameScreen.classList.contains('hidden')) return;
+
+            if (e.key >= '0' && e.key <= '9') {
+                pressNum(e.key);
+            } else if (e.key === 'Backspace') {
+                pressBackspace();
+            } else if (e.key === 'Escape') {
+                pressClear();
+            } else if (e.key === 'Enter') {
+                submitAnswer();
+            }
+        });
+
+        /* ===================================================================
+           STREAMING_CHUNK:Executing answer verification and streak mechanics...
+           =================================================================== */
+        function submitAnswer() {
+            if (!typedInput) return;
+            const userAns = parseInt(typedInput, 10);
+
+            if (userAns === currentQuestion.ans) {
+                // Correct Answer!
+                SoundEngine.playCorrect();
+                score += 10;
+                streak++;
+                
+                if (currentMode === 'speed') {
+                    speedScore++;
+                }
+
+                updateCatState('happy', "Woohoo! That's correct! You're a math superstar! ⭐");
+                spawnHeartParticles();
+                
+                if (streak >= 5) {
+                    stars += 3;
+                    score += 50;
+                    saveStats();
+                    triggerChestUnlock();
+                    streak = 0;
+                }
+
+                saveStats();
+                updateStreakUI();
+                
+                typedInput = '';
+                updateAnswerDisplay();
+                setTimeout(() => {
+                    nextQuestion();
+                }, 800);
+
+            } else {
+                // Incorrect Answer!
+                SoundEngine.playWrong();
+                streak = 0;
+                updateStreakUI();
+                updateCatState('sad', `Almost! ${currentQuestion.hint}`);
+                typedInput = '';
+                updateAnswerDisplay();
+            }
+        }
+
+        function updateStreakUI() {
+            document.getElementById('streak-count').innerText = streak;
+            const bar = document.getElementById('streak-progress-bar');
+            bar.style.width = `${(streak / 5) * 100}%`;
+        }
+
+        /* ===================================================================
+           STREAMING_CHUNK:Controlling Professor Whiskers SVG mascot states...
+           =================================================================== */
+        function updateCatState(mood, text) {
             const speech = document.getElementById('cat-speech');
-            const container = document.getElementById('cat-container');
-            const catSvg = document.getElementById('cat-svg');
+            const svg = document.getElementById('cat-svg');
+            const tear = document.getElementById('cat-tear');
             const mouth = document.getElementById('cat-mouth');
             
-            speech.innerText = message;
-            container.classList.remove('cat-happy', 'cat-sad');
-            catSvg.classList.remove('cat-happy', 'cat-sad');
+            speech.innerText = text;
+            svg.classList.remove('cat-anim-happy', 'cat-anim-sad');
+
+            // Hide special eyes by default
+            document.getElementById('eye-happy-left').classList.add('hidden');
+            document.getElementById('eye-happy-right').classList.add('hidden');
+            document.getElementById('eye-sad-left').classList.add('hidden');
+            document.getElementById('eye-sad-right').classList.add('hidden');
+            document.getElementById('eye-normal-left').classList.remove('hidden');
+            document.getElementById('eye-normal-right').classList.remove('hidden');
+            tear.classList.add('hidden');
 
             if (mood === 'happy') {
-                container.classList.add('cat-happy');
-                mouth.setAttribute('d', 'M 40 60 Q 50 72 60 60'); // Big smile
+                svg.classList.add('cat-anim-happy');
+                document.getElementById('eye-normal-left').classList.add('hidden');
+                document.getElementById('eye-normal-right').classList.add('hidden');
+                document.getElementById('eye-happy-left').classList.remove('hidden');
+                document.getElementById('eye-happy-right').classList.remove('hidden');
+                mouth.setAttribute('d', 'M 40 60 Q 50 72 60 60'); // Wide smile
             } else if (mood === 'sad') {
-                container.classList.add('cat-sad');
+                svg.classList.add('cat-anim-sad');
+                document.getElementById('eye-normal-left').classList.add('hidden');
+                document.getElementById('eye-normal-right').classList.add('hidden');
+                document.getElementById('eye-sad-left').classList.remove('hidden');
+                document.getElementById('eye-sad-right').classList.remove('hidden');
+                tear.classList.remove('hidden');
                 mouth.setAttribute('d', 'M 40 68 Q 50 58 60 68'); // Frown
             } else {
-                mouth.setAttribute('d', 'M 44 63 Q 50 68 56 63'); // Normal smile
+                mouth.setAttribute('d', 'M 44 63 Q 50 68 56 63'); // Standard smile
+            }
+        }
+
+        function spawnHeartParticles() {
+            const wrapper = document.getElementById('cat-wrapper');
+            for (let i = 0; i < 3; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-particle text-red-500 text-sm font-black';
+                heart.innerText = '❤️';
+                heart.style.left = `${20 + Math.random() * 50}%`;
+                heart.style.top = '10%';
+                wrapper.appendChild(heart);
+                setTimeout(() => heart.remove(), 900);
             }
         }
 
         /* ===================================================================
-           STREAMING_CHUNK:Managing hint and solution modals...
+           STREAMING_CHUNK:Managing game navigation and timer routines...
            =================================================================== */
-        function openHintModal() {
-            SoundFX.playClick();
-            const deck = PUZZLE_DECK[currentDifficulty];
-            const puzzle = deck[currentPuzzleIndex % deck.length];
-            document.getElementById('hint-text').innerText = puzzle.hint;
-            document.getElementById('hint-modal').classList.remove('hidden');
-            document.getElementById('hint-modal').classList.add('flex');
+        function startTopicQuest(mode) {
+            SoundEngine.playClick();
+            currentMode = mode;
+            streak = 0;
+            updateStreakUI();
+
+            document.getElementById('mode-select-screen').classList.add('hidden');
+            document.getElementById('game-play-screen').classList.remove('hidden');
+            document.getElementById('game-play-screen').classList.add('flex');
+            document.getElementById('timer-badge').classList.add('hidden');
+
+            const labels = {
+                addition: 'Addition Quest',
+                subtraction: 'Subtraction Quest',
+                multiplication: 'Multiplication Quest',
+                division: 'Division Quest',
+                mixed: 'Mixed & Missing Numbers'
+            };
+            document.getElementById('mode-indicator').innerText = labels[mode] || 'Math Quest';
+
+            updateCatState('normal', `Let's tackle ${labels[mode]}! Take your time and solve each equation.`);
+            nextQuestion();
         }
 
-        function closeHintModal() {
-            SoundFX.playClick();
-            document.getElementById('hint-modal').classList.remove('flex');
-            document.getElementById('hint-modal').classList.add('hidden');
+        function startSpeedRun() {
+            SoundEngine.playClick();
+            currentMode = 'speed';
+            speedScore = 0;
+            speedTimeLeft = 60;
+            streak = 0;
+            updateStreakUI();
+
+            document.getElementById('mode-select-screen').classList.add('hidden');
+            document.getElementById('game-play-screen').classList.remove('hidden');
+            document.getElementById('game-play-screen').classList.add('flex');
+            document.getElementById('timer-badge').classList.remove('hidden');
+            document.getElementById('mode-indicator').innerText = '60s Speed Run';
+            document.getElementById('time-left').innerText = speedTimeLeft;
+
+            updateCatState('normal', "Speed Run starting! Answer as fast as you can!");
+            nextQuestion();
+
+            clearInterval(speedTimer);
+            speedTimer = setInterval(() => {
+                speedTimeLeft--;
+                document.getElementById('time-left').innerText = speedTimeLeft;
+                if (speedTimeLeft <= 0) {
+                    clearInterval(speedTimer);
+                    endSpeedRun();
+                }
+            }, 1000);
         }
 
-        function openSolutionModal() {
-            SoundFX.playClick();
-            const deck = PUZZLE_DECK[currentDifficulty];
-            const puzzle = deck[currentPuzzleIndex % deck.length];
-            const stepsContainer = document.getElementById('solution-steps');
-            stepsContainer.innerHTML = '';
-            
-            puzzle.solution.forEach((step, idx) => {
-                const div = document.createElement('div');
-                div.className = "flex items-center gap-2";
-                div.innerHTML = `<span class="bg-purple-200 text-purple-800 font-bold px-2 py-0.5 rounded-lg text-xs">Step ${idx + 1}</span> <span>${step}</span>`;
-                stepsContainer.appendChild(div);
-            });
-
-            document.getElementById('solution-modal').classList.remove('hidden');
-            document.getElementById('solution-modal').classList.add('flex');
+        function nextQuestion() {
+            typedInput = '';
+            updateAnswerDisplay();
+            currentQuestion = MathGenerator.generate(currentMode === 'speed' ? 'mixed' : currentMode);
+            document.getElementById('question-text').innerText = currentQuestion.text;
         }
 
-        function closeSolutionModal() {
-            SoundFX.playClick();
-            document.getElementById('solution-modal').classList.remove('flex');
-            document.getElementById('solution-modal').classList.add('hidden');
+        function returnToMenu() {
+            SoundEngine.playClick();
+            clearInterval(speedTimer);
+            document.getElementById('game-play-screen').classList.add('hidden');
+            document.getElementById('game-play-screen').classList.remove('flex');
+            document.getElementById('mode-select-screen').classList.remove('hidden');
+            updateCatState('normal', "Welcome back! Pick a mode whenever you're ready!");
         }
 
-        // Start game on load
-        window.addEventListener('DOMContentLoaded', initGame);
+        /* ===================================================================
+           STREAMING_CHUNK:Handling mystery chest unlock and speed run modals...
+           =================================================================== */
+        function triggerChestUnlock() {
+            SoundEngine.playFanfare();
+            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+            document.getElementById('chest-modal').classList.remove('hidden');
+            document.getElementById('chest-modal').classList.add('flex');
+        }
+
+        function closeChestModal() {
+            SoundEngine.playClick();
+            document.getElementById('chest-modal').classList.add('hidden');
+            document.getElementById('chest-modal').classList.remove('flex');
+        }
+
+        function endSpeedRun() {
+            SoundEngine.playFanfare();
+            const currentBest = parseInt(localStorage.getItem('gw_math_speed_best') || '0', 10);
+            if (speedScore > currentBest) {
+                localStorage.setItem('gw_math_speed_best', speedScore);
+                document.getElementById('speed-high-score').innerText = `Best: ${speedScore}`;
+            }
+
+            document.getElementById('res-speed-score').innerText = speedScore;
+            document.getElementById('res-speed-best').innerText = Math.max(speedScore, currentBest);
+
+            document.getElementById('speed-results-modal').classList.remove('hidden');
+            document.getElementById('speed-results-modal').classList.add('flex');
+        }
+
+        function closeSpeedResultsModal() {
+            SoundEngine.playClick();
+            document.getElementById('speed-results-modal').classList.add('hidden');
+            document.getElementById('speed-results-modal').classList.remove('flex');
+            returnToMenu();
+        }
+
+        function toggleAudio() {
+            SoundEngine.muted = !SoundEngine.muted;
+            const icon = document.getElementById('mute-icon');
+            if (SoundEngine.muted) {
+                icon.className = 'fa-solid fa-volume-xmark text-rose-500';
+            } else {
+                icon.className = 'fa-solid fa-volume-high text-slate-700';
+            }
+        }
+
+        // Initialize game on window load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedStats();
+        });
     </script>
 </body>
 </html>
