@@ -458,34 +458,58 @@
             });
         }
 
-        function combineCards(index1, index2) {
-    // 1. SAFETY FALLBACK: If selectedOp is null, check if a button is active in the DOM
-    if (!selectedOp) {
-        const activeOpBtn = document.querySelector('.op-btn.active'); // Adjust selector to match your operator button class
-        if (activeOpBtn) {
-            selectedOp = activeOpBtn.dataset.op; // or activeOpBtn.innerText
+        function combineCards(id1, id2) {
+            const card1 = activeCards.find(c => c.id === id1);
+            const card2 = activeCards.find(c => c.id === id2);
+
+            if (!card1 || !card2 || !selectedOperator) return;
+
+            let val1 = card1.value;
+            let val2 = card2.value;
+            let result = 0;
+
+            if (selectedOperator === '+') result = val1 + val2;
+            else if (selectedOperator === '-') result = val1 - val2;
+            else if (selectedOperator === '×') result = val1 * val2;
+            else if (selectedOperator === '÷') {
+                if (val2 === 0 || val1 % val2 !== 0) {
+                    SoundFX.playError();
+                    updateCatMascot('sad', "Division must result in a whole number! Try another combination.");
+                    selectedCard1 = null;
+                    selectedOperator = null;
+                    clearOperatorSelection();
+                    renderCards();
+                    return;
+                }
+                result = val1 / val2;
+            }
+
+            SoundFX.playCombine();
+
+            // Replace card 1 with result, remove card 2
+            activeCards = activeCards.filter(c => c.id !== id2);
+            const targetCard = activeCards.find(c => c.id === id1);
+            if (targetCard) {
+                targetCard.value = result;
+            }
+
+            selectedCard1 = null;
+            selectedOperator = null;
+            clearOperatorSelection();
+            renderCards();
+
+            // Check win condition (only 1 card left and it equals 24)
+            if (activeCards.length === 1) {
+                if (activeCards[0].value === 24) {
+                    handleVictory();
+                } else {
+                    SoundFX.playError();
+                    updateCatMascot('sad', `Got ${activeCards[0].value}, but we need 24! Tap Reset to try again.`);
+                }
+            } else {
+                updateCatMascot('normal', `Calculated ${val1} ${selectedOperator} ${val2} = ${result}. Keep going!`);
+            }
         }
-    }
-
-    // 2. SECONDARY SAFETY: If it's *still* null, default to addition (+) or alert the user gracefully
-    if (!selectedOp) {
-        showFeedback("Please select an operator (+, -, ×, ÷)!", "error");
-        return;
-    }
-
-    // --- rest of your calculation logic ---
-    let num1 = currentCards[index1];
-    let num2 = currentCards[index2];
-    let result;
-
-    if (selectedOp === '+') result = num1 + num2;
-    else if (selectedOp === '-') result = num1 - num2;
-    else if (selectedOp === '×') result = num1 * num2;
-    else if (selectedOp === '÷') result = num1 / num2;
-
-    // This will now safely print the correct operator instead of "null"
-    logMessage(`Calculated ${num1} ${selectedOp} ${num2} = ${result}`);
-}
 
         /* ===================================================================
            STREAMING_CHUNK:Handling victory celebrations and score progression...
